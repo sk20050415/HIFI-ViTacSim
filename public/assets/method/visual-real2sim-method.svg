@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1050" viewBox="0 0 2400 1050" role="img" aria-labelledby="title desc">
+  <title id="title">Visual Real2Sim pipeline</title>
+  <desc id="desc">A visual Real2Sim pipeline with parallel 3D Gaussian Splatting and Neuralangelo reconstruction branches, generative object assets, camera and scene registration, and synchronized RGB rollout generation.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#17304f" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#496278"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#d96d21"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#408768"/>
+    </marker>
+    <clipPath id="real-clip"><rect x="72" y="220" width="330" height="230" rx="18"/></clipPath>
+    <clipPath id="gs-clip"><rect x="945" y="236" width="292" height="160" rx="14"/></clipPath>
+    <clipPath id="neural-clip"><rect x="945" y="478" width="292" height="196" rx="14"/></clipPath>
+    <clipPath id="gs-out-clip"><rect x="1904" y="225" width="384" height="180" rx="14"/></clipPath>
+    <clipPath id="neural-out-clip"><rect x="1904" y="492" width="384" height="214" rx="14"/></clipPath>
+    <style>
+      .font { font-family: "Google Sans", "Noto Sans", Arial, sans-serif; }
+      .panel-title { font-size: 36px; font-weight: 800; fill: #223247; }
+      .branch-title { font-size: 32px; font-weight: 800; }
+      .label { font-size: 26px; font-weight: 700; fill: #2f4052; }
+      .small { font-size: 22px; font-weight: 500; fill: #5d6b78; }
+      .tiny { font-size: 20px; font-weight: 600; fill: #667480; }
+      .stage { font-size: 22px; font-weight: 800; fill: #fff; }
+      .arrow { fill: none; stroke: #496278; stroke-width: 6; marker-end: url(#arrow); }
+      .soft-line { fill: none; stroke: #aebbc7; stroke-width: 4; stroke-dasharray: 11 10; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="1050" fill="#f8fafc"/>
+  <text class="font" x="52" y="68" font-size="40" font-weight="900" fill="#1f2d3d">Visual Real2Sim Pipeline</text>
+  <text class="font small" x="52" y="105">Two calibrated scene representations share the same robot, cameras, and generated object assets.</text>
+
+  <!-- Stage A -->
+  <rect x="42" y="140" width="390" height="790" rx="30" fill="#e9f3fd" stroke="#b8d3ed" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="64" y="158" width="42" height="42" rx="12" fill="#377fbc"/>
+  <text class="font stage" x="85" y="187" text-anchor="middle">A</text>
+  <text class="font panel-title" x="122" y="190">Real-World Capture</text>
+  <image href="../views/1/real.webp" x="72" y="220" width="330" height="230" preserveAspectRatio="xMidYMid slice" clip-path="url(#real-clip)"/>
+  <rect x="72" y="220" width="330" height="230" rx="18" fill="none" stroke="#8db6da" stroke-width="3"/>
+  <g transform="translate(93 486)">
+    <path d="M8 44 L34 19 H70 L97 44 V92 H8 Z" fill="#fff" stroke="#5088b5" stroke-width="4"/>
+    <circle cx="52" cy="55" r="20" fill="#dcecf8" stroke="#5088b5" stroke-width="4"/>
+    <path d="M26 19 L39 4 H66 L77 19" fill="#fff" stroke="#5088b5" stroke-width="4"/>
+    <path d="M122 16 L122 93 M104 35 L140 35 M107 78 L137 78" stroke="#5088b5" stroke-width="5" stroke-linecap="round"/>
+    <path d="M122 17 L92 52 M122 17 L151 52 M122 17 L122 61" stroke="#8fb6d7" stroke-width="3"/>
+  </g>
+  <text class="font label" x="246" y="628" text-anchor="middle">Multi-view RGB Images</text>
+  <text class="font small" x="246" y="666" text-anchor="middle">workspace appearance</text>
+  <text class="font label" x="246" y="742" text-anchor="middle">Global + Wrist Cameras</text>
+  <text class="font small" x="246" y="780" text-anchor="middle">intrinsics and extrinsics</text>
+  <rect x="83" y="837" width="326" height="58" rx="29" fill="#fff" stroke="#b7cee3" stroke-width="3"/>
+  <text class="font tiny" x="246" y="874" text-anchor="middle">shared input for both branches</text>
+
+  <!-- Input arrows -->
+  <path class="arrow" d="M432 314 H500"/>
+  <path class="arrow" d="M432 596 H500"/>
+
+  <!-- Stage B -->
+  <rect x="500" y="140" width="785" height="610" rx="30" fill="#fff" stroke="#d9e1e8" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="522" y="158" width="42" height="42" rx="12" fill="#566b7f"/>
+  <text class="font stage" x="543" y="187" text-anchor="middle">B</text>
+  <text class="font panel-title" x="580" y="190">Parallel Workspace Reconstruction</text>
+
+  <!-- 3DGS branch -->
+  <rect x="530" y="218" width="725" height="208" rx="22" fill="#fff3e8" stroke="#efb37e" stroke-width="3"/>
+  <rect x="552" y="240" width="250" height="48" rx="24" fill="#d96d21"/>
+  <text class="font branch-title" x="677" y="274" text-anchor="middle" fill="#fff">3DGS</text>
+  <circle cx="610" cy="342" r="10" fill="#e37c2d"/><circle cx="642" cy="322" r="7" fill="#f0a165"/><circle cx="672" cy="354" r="12" fill="#cc5f18"/><circle cx="707" cy="330" r="8" fill="#e9914f"/>
+  <circle cx="742" cy="360" r="9" fill="#f0a165"/><circle cx="779" cy="336" r="11" fill="#d96d21"/><circle cx="814" cy="356" r="7" fill="#cc5f18"/>
+  <path d="M839 337 H903" fill="none" stroke="#d96d21" stroke-width="5" marker-end="url(#arrow-orange)"/>
+  <image href="../views/1/gaussian.webp" x="945" y="236" width="292" height="160" preserveAspectRatio="xMidYMid slice" clip-path="url(#gs-clip)"/>
+  <rect x="945" y="236" width="292" height="160" rx="14" fill="none" stroke="#db8a4d" stroke-width="3"/>
+  <text class="font tiny" x="1091" y="412" text-anchor="middle" fill="#a24f18">photorealistic appearance + collision mesh</text>
+
+  <!-- Neural branch -->
+  <rect x="530" y="449" width="725" height="255" rx="22" fill="#eaf7f0" stroke="#99cdb4" stroke-width="3"/>
+  <rect x="552" y="471" width="250" height="48" rx="24" fill="#408768"/>
+  <text class="font branch-title" x="677" y="505" text-anchor="middle" fill="#fff">Neuralangelo</text>
+  <g transform="translate(580 543)" fill="none" stroke="#408768" stroke-width="3">
+    <path d="M0 82 L45 8 L94 78 L142 20 L194 88 Z"/>
+    <path d="M0 82 L94 78 L194 88 M45 8 L142 20 M45 8 L94 78 M142 20 L94 78"/>
+    <circle cx="45" cy="8" r="6" fill="#7fbea0"/><circle cx="94" cy="78" r="6" fill="#7fbea0"/><circle cx="142" cy="20" r="6" fill="#7fbea0"/>
+  </g>
+  <path d="M810 588 H903" fill="none" stroke="#408768" stroke-width="5" marker-end="url(#arrow-green)"/>
+  <image href="../evaluation/simulation/toy-box-neural.webp" x="945" y="478" width="292" height="196" preserveAspectRatio="xMidYMid slice" clip-path="url(#neural-clip)"/>
+  <rect x="945" y="478" width="292" height="196" rx="14" fill="none" stroke="#5a9e7d" stroke-width="3"/>
+  <text class="font tiny" x="1091" y="697" text-anchor="middle" fill="#2d7053">unified appearance + surface geometry</text>
+
+  <!-- Generative assets -->
+  <rect x="500" y="780" width="785" height="150" rx="26" fill="#fff8db" stroke="#e3c869" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="522" y="800" width="42" height="42" rx="12" fill="#c39a18"/>
+  <text class="font stage" x="543" y="829" text-anchor="middle">C</text>
+  <text class="font panel-title" x="580" y="832">Generative Object Assets</text>
+  <g transform="translate(588 858)">
+    <circle cx="28" cy="28" r="22" fill="#e7614c"/><circle cx="28" cy="28" r="10" fill="#fff8db"/>
+    <rect x="83" y="7" width="45" height="45" rx="8" fill="#4e96cf" transform="rotate(10 105 30)"/>
+    <path d="M168 51 L190 5 L214 51 Z" fill="#e4b52d"/>
+  </g>
+  <path d="M830 887 H915" class="arrow"/>
+  <text class="font label" x="1045" y="878" text-anchor="middle">Image-to-3D Generator</text>
+  <text class="font small" x="1045" y="914" text-anchor="middle">visual mesh + collision mesh</text>
+
+  <!-- Stage D -->
+  <path class="arrow" d="M1285 445 H1350"/>
+  <path class="arrow" d="M1285 855 H1318 V650 H1350"/>
+  <rect x="1350" y="140" width="430" height="790" rx="30" fill="#f2edfb" stroke="#c4afe5" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="1372" y="158" width="42" height="42" rx="12" fill="#7556a8"/>
+  <text class="font stage" x="1393" y="187" text-anchor="middle">D</text>
+  <text class="font panel-title" x="1430" y="190" style="font-size:27px">Calibration &amp; Alignment</text>
+  <rect x="1390" y="239" width="350" height="126" rx="18" fill="#fff" stroke="#d4c6e9" stroke-width="3"/>
+  <text class="font label" x="1565" y="283" text-anchor="middle">Camera Calibration</text>
+  <text class="font small" x="1565" y="326" text-anchor="middle">K, T</text>
+  <text class="font" x="1585" y="321" font-size="17" font-weight="700" fill="#6a7581">cam←base</text>
+  <rect x="1390" y="396" width="350" height="166" rx="18" fill="#fff" stroke="#d4c6e9" stroke-width="3"/>
+  <text class="font label" x="1565" y="442" text-anchor="middle">Scene Registration</text>
+  <text class="font small" x="1565" y="483" text-anchor="middle">T</text>
+  <text class="font" x="1580" y="478" font-size="17" font-weight="700" fill="#6a7581">sim←recon</text>
+  <g transform="translate(1504 503)">
+    <path d="M0 36 H80" stroke="#db4b4b" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M0 36 V-25" stroke="#4e9a65" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M0 36 L-35 67" stroke="#4e74be" stroke-width="5" marker-end="url(#arrow)"/>
+  </g>
+  <rect x="1390" y="593" width="350" height="137" rx="18" fill="#fff" stroke="#d4c6e9" stroke-width="3"/>
+  <text class="font label" x="1565" y="638" text-anchor="middle">Object Alignment</text>
+  <text class="font small" x="1565" y="681" text-anchor="middle">metric scale + initial pose</text>
+  <rect x="1390" y="766" width="350" height="110" rx="18" fill="#7556a8"/>
+  <text class="font label" x="1565" y="812" text-anchor="middle" style="fill:#fff">Shared Simulator Frame</text>
+  <text class="font small" x="1565" y="850" text-anchor="middle" style="fill:#eee6fa">robot · scene · cameras · objects</text>
+
+  <!-- Stage E -->
+  <path class="arrow" d="M1780 445 H1845"/>
+  <rect x="1845" y="140" width="510" height="790" rx="30" fill="#edf4ff" stroke="#afc7e6" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="1867" y="158" width="42" height="42" rx="12" fill="#3a68a5"/>
+  <text class="font stage" x="1888" y="187" text-anchor="middle">E</text>
+  <text class="font panel-title" x="1925" y="190" style="font-size:32px">Aligned Simulators</text>
+  <image href="../evaluation/simulation/toy-box-3dgs.webp" x="1904" y="225" width="384" height="180" preserveAspectRatio="xMidYMid slice" clip-path="url(#gs-out-clip)"/>
+  <rect x="1904" y="225" width="384" height="180" rx="14" fill="none" stroke="#d96d21" stroke-width="4"/>
+  <rect x="1922" y="241" width="105" height="38" rx="19" fill="#d96d21"/>
+  <text class="font tiny" x="1974" y="268" text-anchor="middle" style="fill:#fff">3DGS Sim</text>
+
+  <image href="../evaluation/simulation/toy-box-neural.webp" x="1904" y="492" width="384" height="214" preserveAspectRatio="xMidYMid slice" clip-path="url(#neural-out-clip)"/>
+  <rect x="1904" y="492" width="384" height="214" rx="14" fill="none" stroke="#408768" stroke-width="4"/>
+  <rect x="1922" y="510" width="135" height="38" rx="19" fill="#408768"/>
+  <text class="font tiny" x="1989" y="537" text-anchor="middle" style="fill:#fff">Neural Sim</text>
+
+  <path d="M2096 423 V468" class="soft-line"/>
+  <path d="M2096 726 V769" class="soft-line"/>
+  <rect x="1904" y="770" width="384" height="116" rx="20" fill="#3a68a5"/>
+  <text class="font label" x="2096" y="817" text-anchor="middle" style="fill:#fff">Synchronized RGB Rollouts</text>
+  <text class="font small" x="2096" y="858" text-anchor="middle" style="fill:#e9f2ff">external camera + wrist camera</text>
+
+  <!-- Footer legend -->
+  <g transform="translate(54 988)">
+    <circle cx="10" cy="0" r="10" fill="#d96d21"/><text class="font tiny" x="30" y="7">3DGS branch</text>
+    <circle cx="226" cy="0" r="10" fill="#408768"/><text class="font tiny" x="246" y="7">Neuralangelo branch</text>
+    <circle cx="522" cy="0" r="10" fill="#7556a8"/><text class="font tiny" x="542" y="7">shared calibration</text>
+    <circle cx="786" cy="0" r="10" fill="#c39a18"/><text class="font tiny" x="806" y="7">generated foreground assets</text>
+  </g>
+</svg>

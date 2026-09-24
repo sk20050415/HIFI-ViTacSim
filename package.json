@@ -1,0 +1,25 @@
+{
+  "name": "table-cloth-real2sim-presentation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "node tools/patch_playcanvas.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "prepare-assets": "python tools/prepare_assets.py",
+    "prepare-rollouts": "python tools/prepare_rollout_assets.py",
+    "verify-isolation": "python tools/verify_isolation.py"
+  },
+  "dependencies": {
+    "playcanvas": "^2.22.4"
+  },
+  "devDependencies": {
+    "@playcanvas/splat-transform": "^3.6.4",
+    "@types/node": "^24.3.0",
+    "puppeteer-core": "^25.12.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3"
+  }
+}

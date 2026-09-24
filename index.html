@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
+    <meta name="description" content="Interactive Real, 3D Gaussian Splatting and Neural reconstruction comparison." />
+    <title>HIFI-ViTacSim: High-Fidelity Visuotactile Real2Sim2Real for Zero-Shot Robotic Manipulation</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="Back to top">
+          <span class="brand-mark">HV</span>
+          <span class="brand-copy">HIFI-ViTacSim</span>
+        </a>
+        <nav aria-label="Primary navigation">
+          <a href="#real2sim" data-i18n="navReal2Sim">Real2Sim</a>
+          <a href="#method" data-i18n="navMethod">Method</a>
+          <a href="#act-zero-shot" data-i18n="navActZeroShot">ACT Zero-Shot</a>
+          <button id="language-button" class="text-button" type="button" aria-label="Switch language">中文</button>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero" aria-labelledby="hero-title">
+          <video class="hero-background-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
+            <source src="./assets/evaluation/real/toy-box-real.mp4" type="video/mp4" />
+          </video>
+          <div class="hero-content section-shell">
+            <div class="eyebrow"><span></span><span data-i18n="eyebrow">Interactive scene reconstruction</span></div>
+            <h1 id="hero-title"><span data-i18n="heroTitleA">HIFI-ViTacSim:</span> <em data-i18n="heroTitleB">High-Fidelity Visuotactile Real2Sim2Real for Zero-Shot Robotic Manipulation</em></h1>
+          </div>
+        </section>
+
+        <section id="real2sim" class="paper-section section-shell" aria-labelledby="real2sim-title">
+          <div class="paper-section-heading">
+            <h2 id="real2sim-title"><span>1</span> Real2Sim</h2>
+            <p data-i18n="real2simIntro">We reconstruct the physical workspace as both photorealistic appearance and continuous geometry, then use the resulting simulator for policy data collection.</p>
+          </div>
+
+          <section id="compare" class="paper-subsection compare-section" aria-labelledby="compare-title">
+            <div class="paper-subsection-heading">
+              <h3 id="compare-title"><span>1.1</span> <span data-i18n="exactTitle">Real / Sim</span></h3>
+            </div>
+            <p data-i18n="exactIntro">Select a calibrated camera and drag the divider. Real photographs retain their original 4:3 proportions without stretching.</p>
+
+            <div id="exact-card" class="viewer-card exact-card">
+              <div id="exact-stage" class="viewer-stage exact-stage" tabindex="0" aria-label="Calibrated Real and Sim comparison">
+                <img id="exact-real-layer" class="viewer-layer comparison-image" src="./assets/views/1/real.webp" alt="Calibrated real capture" />
+                <img id="exact-gaussian-layer" class="viewer-layer comparison-image" src="./assets/views/1/gaussian.webp" alt="Sim reconstruction" />
+                <div id="exact-divider" class="divider" role="slider" aria-label="Real and Sim comparison divider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+                  <span class="divider-line"></span><span class="divider-handle">↔</span>
+                </div>
+                <div class="view-label left-label">SIM</div>
+                <div class="view-label right-label">REAL</div>
+                <div class="interaction-hint" id="interaction-hint"><span>↔</span><span data-i18n="dragCompare">Drag to compare</span></div>
+              </div>
+              <div class="view-strip" aria-label="Captured viewpoints">
+                <span class="toolbar-label" data-i18n="camera">Camera</span>
+                <div id="exact-view-buttons" class="view-buttons"></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="reconstruction" class="paper-subsection compare-section reconstruction-section" aria-labelledby="reconstruction-title">
+            <div class="paper-subsection-heading">
+              <h3 id="reconstruction-title"><span>1.2</span> 3DGS / Neural</h3>
+            </div>
+            <p data-i18n="reconstructionIntro">Both reconstructions share one constrained camera. Drag to orbit around the tabletop; the view cannot turn toward the ceiling or leave the calibrated desk region.</p>
+
+            <div id="viewer-card" class="viewer-card free-mode">
+            <div id="reconstruction-stage" class="viewer-stage reconstruction-stage" tabindex="0" aria-label="Interactive 3DGS and Neural comparison">
+              <canvas id="reconstruction-canvas" class="viewer-layer render-layer" aria-label="3DGS and Neural reconstruction"></canvas>
+              <div id="reconstruction-divider" class="divider" role="slider" aria-label="3DGS and Neural comparison divider" aria-valuemin="18" aria-valuemax="82" aria-valuenow="50" tabindex="0">
+                <span class="divider-line"></span><span class="divider-handle">↔</span>
+              </div>
+              <div class="view-label left-label">3DGS</div>
+              <div class="view-label right-label">NEURAL</div>
+              <div id="loading-panel" class="loading-panel" role="status" aria-live="polite">
+                <div class="loader-ring"></div>
+                <strong data-i18n="loadingTitle">Preparing interactive scene</strong>
+                <span id="loading-detail">Loading 3D Gaussian Splat…</span>
+              </div>
+              <div id="viewer-error" class="viewer-error" hidden></div>
+            </div>
+            <div class="viewer-toolbar">
+              <div class="toolbar-group">
+                <span class="toolbar-label" data-i18n="cameraRange">Camera range</span>
+                <span id="camera-readout" class="camera-readout">0° · 60° · 0.90m</span>
+              </div>
+              <button id="reset-camera" class="icon-button" type="button" title="Reset camera" aria-label="Reset camera">↺ <span data-i18n="reset">Reset</span></button>
+            </div>
+            <div class="viewer-help">
+              <span><i class="mouse-icon">◉</i><span data-i18n="orbitHelp">Drag to orbit</span></span>
+              <span><i>⇧</i><span data-i18n="panHelp">Shift-drag to pan</span></span>
+              <span><i>⌁</i><span data-i18n="zoomHelp">Scroll to zoom</span></span>
+              <span class="limit-chip"><i>⌗</i><span data-i18n="limitedHelp">Tabletop limits active</span></span>
+            </div>
+            </div>
+          </section>
+
+          <section id="simulation-rollouts" class="paper-subsection simulation-rollouts" aria-labelledby="simulation-title">
+            <div class="paper-subsection-heading">
+              <h3 id="simulation-title"><span>1.3</span> <span data-i18n="simulationTitle">Simulation data collection</span></h3>
+              <p data-i18n="simulationIntro">Synchronized external and wrist-camera observations from both scene representations.</p>
+            </div>
+
+            <div class="rollout-tabs" role="tablist" aria-label="Simulation task">
+              <button id="rollout-tab-toy" class="active" type="button" role="tab" aria-selected="true" aria-controls="rollout-panel-toy" data-rollout-tab="toy-box" data-i18n="toyBox">Toy Box</button>
+              <button id="rollout-tab-ring" type="button" role="tab" aria-selected="false" aria-controls="rollout-panel-ring" tabindex="-1" data-rollout-tab="red-ring" data-i18n="redRing">Red Ring</button>
+            </div>
+
+            <div id="rollout-panel-toy" class="rollout-task-panel" role="tabpanel" aria-labelledby="rollout-tab-toy" data-rollout-panel="toy-box">
+              <div class="rollout-sim-grid">
+                <article class="rollout-card">
+                  <header><span>NEURAL</span><small data-i18n="simRollout">SIMULATION ROLLOUT</small></header>
+                  <div class="rollout-video dual-camera-video">
+                    <video controls playsinline preload="metadata" poster="./assets/evaluation/simulation/toy-box-neural.webp" aria-label="Toy Box Neural simulation rollout">
+                      <source src="./assets/evaluation/simulation/toy-box-neural.mp4" type="video/mp4" />
+                    </video>
+                    <div class="camera-tags" aria-hidden="true"><span data-i18n="highCamera">EXTERNAL CAMERA</span><span data-i18n="wristCamera">WRIST CAMERA</span></div>
+                  </div>
+                </article>
+                <article class="rollout-card">
+                  <header><span>3DGS</span><small data-i18n="simRollout">SIMULATION ROLLOUT</small></header>
+                  <div class="rollout-video dual-camera-video">
+                    <video controls playsinline preload="metadata" poster="./assets/evaluation/simulation/toy-box-3dgs.webp" aria-label="Toy Box 3DGS simulation rollout">
+                      <source src="./assets/evaluation/simulation/toy-box-3dgs.mp4" type="video/mp4" />
+                    </video>
+                    <div class="camera-tags" aria-hidden="true"><span data-i18n="highCamera">EXTERNAL CAMERA</span><span data-i18n="wristCamera">WRIST CAMERA</span></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <div id="rollout-panel-ring" class="rollout-task-panel" role="tabpanel" aria-labelledby="rollout-tab-ring" data-rollout-panel="red-ring" hidden>
+              <div class="rollout-sim-grid">
+                <article class="rollout-card">
+                  <header><span>NEURAL</span><small data-i18n="simRollout">SIMULATION ROLLOUT</small></header>
+                  <div class="rollout-video dual-camera-video">
+                    <video controls playsinline preload="metadata" poster="./assets/evaluation/simulation/red-ring-neural.webp" aria-label="Red Ring Neural simulation rollout">
+                      <source src="./assets/evaluation/simulation/red-ring-neural.mp4" type="video/mp4" />
+                    </video>
+                    <div class="camera-tags" aria-hidden="true"><span data-i18n="highCamera">EXTERNAL CAMERA</span><span data-i18n="wristCamera">WRIST CAMERA</span></div>
+                  </div>
+                </article>
+                <article class="rollout-card">
+                  <header><span>3DGS</span><small data-i18n="simRollout">SIMULATION ROLLOUT</small></header>
+                  <div class="rollout-video dual-camera-video">
+                    <video controls playsinline preload="metadata" poster="./assets/evaluation/simulation/red-ring-3dgs.webp" aria-label="Red Ring 3DGS simulation rollout">
+                      <source src="./assets/evaluation/simulation/red-ring-3dgs.mp4" type="video/mp4" />
+                    </video>
+                    <div class="camera-tags" aria-hidden="true"><span data-i18n="highCamera">EXTERNAL CAMERA</span><span data-i18n="wristCamera">WRIST CAMERA</span></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="method" class="paper-section section-shell method-placeholder" aria-labelledby="method-title">
+          <div class="paper-section-heading">
+            <h2 id="method-title"><span>2</span> Method</h2>
+            <p data-i18n="methodPlaceholder">Our visual Real2Sim pipeline combines dual-camera capture, alternative background reconstruction, generated object assets, and explicit calibration to build a simulation-ready digital twin.</p>
+          </div>
+          <figure class="method-figure">
+            <img src="./assets/method/presentation-method.png" alt="HIFI-ViTacSim Visual Real2Sim pipeline, including real-world capture, background reconstruction, generated foreground assets, camera and scene calibration, and the simulation-ready environment">
+            <figcaption data-i18n="methodFigureCaption">Overview of the complete pipeline: real-world capture, Neuralangelo or hybrid 3DGS reconstruction, generative foreground assets, dual-camera calibration, and scene registration into a common robot-base frame.</figcaption>
+          </figure>
+        </section>
+
+        <section id="act-zero-shot" class="paper-section section-shell act-section" aria-labelledby="act-title">
+          <div class="paper-section-heading">
+            <h2 id="act-title"><span>3</span> ACT Zero-Shot</h2>
+            <p data-i18n="actIntro">To evaluate simulator fidelity, we deliberately use ACT—a policy that relies heavily on visual observations—and deploy it zero-shot on the physical robot.</p>
+          </div>
+          <div class="real-rollout-grid">
+            <article class="rollout-card">
+              <header><span data-i18n="toyBox">Toy Box</span><small data-i18n="realRollout">REAL-WORLD ROLLOUT</small></header>
+              <div class="rollout-video real-rollout-video">
+                <video controls playsinline preload="metadata" poster="./assets/evaluation/real/toy-box-real.webp" aria-label="Toy Box real-world rollout">
+                  <source src="./assets/evaluation/real/toy-box-real.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </article>
+            <article class="rollout-card">
+              <header><span data-i18n="redRing">Red Ring</span><small data-i18n="realRollout">REAL-WORLD ROLLOUT</small></header>
+              <div class="rollout-video real-rollout-video">
+                <video controls playsinline preload="metadata" poster="./assets/evaluation/real/red-ring-real.webp" aria-label="Red Ring real-world rollout">
+                  <source src="./assets/evaluation/real/red-ring-real.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="section-shell"><span>TABLE CLOTH · REAL-TO-SIM</span><span data-i18n="footer">Interactive reconstruction study</span></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

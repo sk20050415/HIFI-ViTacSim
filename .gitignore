@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.cache/
+.tmp/
+/tmp/
+/assets/
+/offline/
+/.outside-status.before.txt
+/.source-hashes.json
+offline/*.zip
+*.log
